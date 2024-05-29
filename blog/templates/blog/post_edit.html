@@ -1,0 +1,14 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div>
+    <h2>New post</h2>
+    <form method="post" enctype="multipart/form-data" class="post-form">{% csrf_token %}
+        {{ form.as_p }}
+    </form>
+    <div style="display: flex; justify-content: right;">
+        <button type="submit" class="btn btn-secondary">Save</button>
+    </div>
+</div>
+
+{% endblock %}

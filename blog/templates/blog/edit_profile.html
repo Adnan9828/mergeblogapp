@@ -1,0 +1,16 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+
+{% if request.user.profile_picture %}
+        <img src="{{ request.user.edit_profile.url }}" alt="Profile Picture">
+    {% else %}
+        <p>No profile picture uploaded.</p>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload Profile Picture</button>
+    </form>
+
+{% endblock %}

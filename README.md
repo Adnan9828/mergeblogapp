@@ -1,1 +1,1 @@
-# mergeblogapp
+# decenteralization-app

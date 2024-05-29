@@ -1,0 +1,128 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+{% if request.user.is_authenticated %}
+<article class="post">
+    <div style="display: flex; align-items: center; padding: 10px; margin-bottom: 15px;">
+        <img class="card-img-top" src="{% if post.thumbnail %}{{ post.thumbnail.url }}{% endif %}" alt="Thumbnail"
+            style="border-radius: 50%; height: 60px; width: 60px; border-style: solid ; border-width: 2px; margin-right: 10px;">
+        <h2 style="margin: 0;">{{ post.title }}</h2>
+        <!-- Margin added to prevent title from sticking to the thumbnail -->
+    </div>
+    <img class="card-img-top" src="{% if post.feature %}{{ post.feature.url }}{% endif %}"" alt=" Card image cap"
+        style="height: 500px; width: 100%; border-radius: 20px; border-style: ridge; border-width: 10px;"><br>
+    <aside class="actions">
+        <a class="btn btn-secondary" href="{% url 'post_edit' slug=post.slug %}" style="margin: 10px;">
+            {% include './icons/pencil-fill.svg' %}
+        </a>
+    </aside>
+    <p style="margin-top: 15px;"><b>Catagory:-&nbsp;</b><a href="{% url 'category' slug=post.catagory.slug %}">{% if post.catagory %}{{ post.catagory }}{% endif %}</a></p>
+    <p>{{ post.text|linebreaksbr }}</p>
+    {% if post.published_date %}
+    <!-- <time class="date"> -->
+    <strong>Published At:-&nbsp;</strong>{{ post.published_date|date:"Y-m-d" }}<br>
+    <!-- </time> -->
+    <strong>Published By:-&nbsp;</strong>{% if post.author %}{{ post.author|title }}{% endif %}
+    {% endif %}
+    <br>
+    <b>Tags:-</b>
+    {% for tag in post.tag.all %}
+    <a href="{% url 'tag' slug=tag.slug %}"><small>{{tag.name}} <b>||</b></small></a>
+    {% endfor %}
+    <br>
+</article>
+
+<div class="container">
+    <h4>Add a Comment</h4>
+
+    <form action="{% url 'postcomment' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="hidden" name="post_id" value="{{ post.id }}">
+        <button type="submit">Post Comment</button>
+    </form>
+
+    {% for comment in comments %}
+    <div class="row my-3">
+        <div class="row-md-1 w-100">
+            {% if comment.user.image %}
+            <img src="{{ comment.user.image.url }}" alt="Profile Photo"
+                class="rounded-circle mb-4 justify-content-center" width="60px" height="60px">
+            {% else %}
+            <img src="https://via.placeholder.com/100" alt="Profile Photo" class="rounded-circle mb-3">
+            {% endif %}
+        </div>
+        <div class="col-md-11">
+            <strong>{{ comment.user.username|title }}</strong> at {{ comment.timestamp }}
+            <div>{{ comment.body }}</div>
+
+            <div class="reply mx-0">
+                <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#replyBox{{comment.sno}}" aria-expanded="false"
+                    aria-controls="replyBox{{comment.sno}}">
+                    Reply
+                </button>
+                <div class="collapse" id="replyBox{{comment.sno}}">
+                    <div class="card card-body my-2">
+                        <form action="{% url 'create_reply' %}" method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <input type="hidden" name="comment_sno" value="{{ comment.sno }}">
+                            <button type="submit">Post Reply</button>
+                        </form>
+
+                        {% for rp in comment.comment_replies.all %}
+                        <div class="row my-3">
+                            <div class="col-md-1 w-100">
+                                {% if rp.user.image %}
+                                <img src="{{ rp.user.image.url }}" alt="Profile Photo"
+                                    class="rounded-circle mb-4 justify-content-center" width="60px" height="60px">
+                                {% else %}
+                                <img src="https://via.placeholder.com/100" alt="Profile Photo"
+                                    class="rounded-circle mb-3">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-11">
+                                <strong>{{ rp.user.username|title }}</strong> at {{ rp.timestamp }}
+                                <div>{{ rp.body }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% else %}
+<article class="post">
+    <div style="display: flex; align-items: center; padding: 10px; margin-bottom: 15px;">
+        <img class="card-img-top" src="{% if post.thumbnail %}{{ post.thumbnail.url }}{% endif %}" alt="Thumbnail"
+            style="border-radius: 50%; height: 60px; width: 60px; border-style: solid ; border-width: 2px; margin-right: 10px;">
+        <h2 style="margin: 0;">{{ post.title }}</h2>
+        <!-- Margin added to prevent title from sticking to the thumbnail -->
+    </div>
+    <img class="card-img-top" src="{% if post.feature %}{{ post.feature.url }}{% endif %}"" alt=" Card image cap"
+        style="height: 500px; width: 100%; border-radius: 20px; border-style: ridge; border-width: 10px;"><br>
+
+    <p style="margin-top: 15px;"><b>Catagory:-&nbsp;</b>
+        <a href="{% url 'category' slug=post.catagory.slug %}">{% if post.catagory %}{{ post.catagory }}{% endif %}</a>
+    </p>
+    <p>{{ post.text|linebreaksbr }}</p>
+    {% if post.published_date %}
+    <!-- <time class="date"> -->
+    <strong>Published At:-&nbsp;</strong>{{ post.published_date|date:"Y-m-d" }}<br>
+    <!-- </time> -->
+    <strong>Published By:-&nbsp;</strong>{% if post.author %}{{ post.author|title }}{% endif %}
+    {% endif %}
+    <br>
+    <b>Tags:-</b>
+    {% for tag in post.tag.all %}
+    <a href="{% url 'tag' slug=tag.slug %}"><small>{{tag.name}} <b>||</b></small></a>
+    {% endfor %}
+</article>
+{% endif %}
+{% endblock %}

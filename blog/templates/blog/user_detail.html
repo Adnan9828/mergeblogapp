@@ -1,0 +1,35 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3 class="card-title mb-0">Welcome, {{ request.user.username|title }}</h3>
+                </div>
+                <div class="card-body position-relative d-flex justify-content-center"> <!-- Added d-flex and justify-content-center classes -->
+                    <!-- Content wrapper -->
+                    <div class="content-wrapper text-center"> <!-- Added text-center class -->
+                        {% if user.image %}
+                            <img src="{{ user.image.url }}" alt="Profile Photo" class="rounded-circle mb-3 justify-content-center" width="100px" height="100px">
+                        {% else %}
+                            <img src="https://via.placeholder.com/100" alt="Profile Photo" class="rounded-circle mb-3">
+                        {% endif %}
+                        
+                        <p> {{ user.firstname|title }} {{ user.lastname|title }}</p>
+                        <p> {{ user.email }}</p>
+                        <p> {{ user.city|title }}  {{ user.state|title }}</p>
+                    </div>
+                    
+                    <aside class="actions position-absolute top-0 end-0 mt-3 me-3">
+                        <a class="btn btn-secondary" href="{% url 'edit-profile' user_id=request.user.id %} ">
+                            {% include './icons/pencil-fill.svg' %}
+                        </a>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
